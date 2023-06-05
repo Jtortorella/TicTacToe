@@ -9,32 +9,30 @@ import { Component, OnDestroy, ViewChild, ElementRef } from '@angular/core'
   styleUrls: ['./toast.component.css']
 })
 export class ToastComponent implements OnDestroy {
+  gameOffSubscription: Subscription;
   alertBoolSubscription: Subscription;
   alertTextSubscription: Subscription;
   alertText: String = "";
   alertOn: boolean = false;
+  gameOff: boolean = false;
   modal: any;
   options: string[] = [];
 
-  constructor(private toastService: ToastService) {
-    
+  constructor(private toastService: ToastService,
+    private gameService: GameService) {
+
+    this.gameOffSubscription = this.gameService.getGameOff().subscribe((change) => {
+      this.gameOff = change;
+    })
+
     this.alertBoolSubscription = this.toastService.getAlertOn().subscribe((change) => {
       this.alertOn = change;
       if (this.alertOn == true) {
         this.show();
       }
     });
-
     this.alertTextSubscription = this.toastService.getAlertText().subscribe((change) => {
-      if (change.split(',').length > 1) {
-        this.options = change.split(',');
-        this.alertText = this.options[0];
-      }
-      else {
-        this.alertText = change;
-        this.options = [];
-      }
-
+      this.alertText = change;
     });
   }
   show() {
@@ -48,11 +46,18 @@ export class ToastComponent implements OnDestroy {
   close() {
     this.modal?.close();
     this.alertText = "";
+    if (this.gameOff == true) {
+      this.gameService.endGame();
+    }
+  }
+  endGame() {
+    this.gameService.endGame();
   }
   ngOnDestroy() {
     this.alertText = "";
     this.options = [];
     this.alertBoolSubscription.unsubscribe();
     this.alertTextSubscription.unsubscribe();
+    this.gameOffSubscription.unsubscribe();
   }
 }
