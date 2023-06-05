@@ -1,10 +1,13 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs'
 import { ToastService } from './toast.service';
+import { Subscription } from 'rxjs';
 
 @Injectable()
 export class GameService {
+     private alertSubscription: Subscription;
 
+     private _alertOn: boolean = false;
      private _userToggle: boolean = true; //Whether it is user's turn.
      private _gameOff: boolean = false; //Whether the game is over.
      private currentColumn: number = 0; //Previously selected position.
@@ -17,6 +20,9 @@ export class GameService {
      gameOff = new BehaviorSubject<boolean>(this._gameOff); //Used to determine whether the game is still being played.
 
      constructor(private toaster: ToastService) {
+          this.alertSubscription = this.toaster.getAlertOn().subscribe((change) => {
+               this._alertOn = change;
+          });
      }
      
      private _ticTacModel = [
@@ -73,24 +79,18 @@ export class GameService {
                     this.changeToOtherPlayer(); //Change to other player.
                }
                else {
-                    this.toaster.createAlert(this._userToggle ? "User's Turn" : "Computer's Turn");
-                    if (this._userToggle == false) {
-                         this.generateComputersMove();
-                    }
+                         if (this._userToggle == false) {
+                              this.generateComputersMove();
+                         }
                }
-          }
-          else {
-               this.endGame()
-               setTimeout(() => {
-                    this.toaster.createAlert("GAME OVER:,Play Again?,Change Game Mode?")}, 1000);
           }
      }
 
      checkIfWon() {
           if (this.checkIfWonByPosition([this.currentRow, this.currentColumn])) {
+               this.toaster.createAlert(this._userToggle ? "You Won!" : "Other Player Won!");
                this._gameOff = true;
                this.gameOff.next(this._gameOff);
-               this.toaster.createAlert(this._userToggle ? "You Won!" : "Other Player Won!");
           }
      }
      checkForDraw() {
@@ -178,12 +178,12 @@ export class GameService {
           this.currentRow = 0;
           //Sends the observable alerting the view.
           this.userToggle.next(this._userToggle);
-          this.gameOff.next(this._gameOff);
           //Defaults to default checkValue.
           this.checkValue = 'X';
           this.updateView.next([0]);
           //Resets game.
           this._gameOff = false;
+          this.gameOff.next(this._gameOff);
      }
 
      generateComputersMove() {
@@ -260,7 +260,7 @@ export class GameService {
           return this.userToggle;
      }
 
-     getGameOn(): BehaviorSubject<boolean> {
+     getGameOff(): BehaviorSubject<boolean> {
           //Used to tell the view that the game is over.
           return this.gameOff;
      }

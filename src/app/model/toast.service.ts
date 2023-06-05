@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class ToastService {
-
+  
   _alertOn: boolean = false;
   _alertText: string = "";
 

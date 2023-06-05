@@ -20,8 +20,10 @@ export class TicTacToeBoardComponent {
     this.turnSubscription = this.gameService.getTurn().subscribe((change) => {
       change == false ? this.checkValue = 'O' : this.checkValue = 'X'
     })
-    this.gameSubscription = this.gameService.getGameOn().subscribe((change) => {
-      this.resetView();
+    this.gameSubscription = this.gameService.getGameOff().subscribe((change) => {
+      if (change == true) {
+        this.resetView();
+      }
     })
     
   }
@@ -42,9 +44,10 @@ export class TicTacToeBoardComponent {
   }
   
   resetView() {
-    for (let index = 0; index < this.elementsChanged.length; index++) {
-      this.elementsChanged[index].innerText = '';
-    }
-    
+    setTimeout(() => {
+      for (let index = 0; index < this.elementsChanged.length; index++) {
+        this.elementsChanged[index].innerText = '';
+      }
+    }, 1000);
   }
 }
