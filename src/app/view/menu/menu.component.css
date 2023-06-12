@@ -1,48 +1,16 @@
 .container {
-     margin: 100px auto;
-     width: 80%;
-     height: 53vh;
-     padding: 20px;
+     width: 90%;
+     margin: 0 auto;
      letter-spacing: .2rem;
      font-size: 1.2rem;
      display: flex;
      flex-direction: column;
-     align-content: center;
-     justify-content: space-between;
+     justify-content: center;
+     align-items: center;
      background-color: blanchedalmond;
-     border: 4px solid salmon;
+     border: .2px solid salmon;
      border-radius: 20px;
-}
-
-.button-group {
-     display: flex;
-     justify-content: space-between;
-
-     margin: 0 auto;
-     padding: 10px;
-
-     
-     border-radius: 20px;
-}
-.button-group button {
-     width: max-content;
-
-     padding: 20px;
-     
-     border: 4px solid black;
-     border-radius: 20px;
-
-     background-color: burlywood;
-     color: black;
-     font-size: 1.2rem;
-
-}
-.button-group button:first-of-type {
-     margin-right: 20px;
-}
-.button-group button:hover {
-     opacity: .6;
-     cursor: pointer;
+     padding: 2%;
 }
 
 

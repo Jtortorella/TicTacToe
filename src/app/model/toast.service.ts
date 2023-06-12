@@ -3,18 +3,12 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class ToastService {
-  
-  _alertOn: boolean = false;
-  _alertText: string = "";
-
-  alertOn = new BehaviorSubject<boolean>(this._alertOn);
-  alertText = new BehaviorSubject<string>(this._alertText);
+  private alertOn = new BehaviorSubject<boolean>(false);
+  private alertText = new BehaviorSubject<string>('');
 
   createAlert(alertText: string) {
-    this._alertOn = true;
-    this.alertOn.next(this._alertOn);
-    this._alertText = alertText;
-    this.alertText.next(this._alertText);
+    this.alertOn.next(true);
+    this.alertText.next(alertText);
   }
 
   getAlertText(): BehaviorSubject<string> {

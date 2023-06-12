@@ -4,15 +4,13 @@ import { MenuComponent } from './view/menu/menu.component';
 import { TicTacToeBoardComponent } from './view/game/tic-tac-toe-board.component';
 
 const routes: Routes = [
-  { path: 'game', component: TicTacToeBoardComponent, runGuardsAndResolvers: 'always' },
-  { path: 'menu', component: MenuComponent},
-  { path: '**', redirectTo: '/menu', pathMatch: 'full'},
-  { path: '/', redirectTo: '/menu', pathMatch: 'full'}
-
+  { path: 'game', component: TicTacToeBoardComponent },
+  { path: 'menu', component: MenuComponent },
+  { path: '**', redirectTo: '/menu' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {onSameUrlNavigation: 'reload'})],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

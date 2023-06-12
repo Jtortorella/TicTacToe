@@ -1,3 +1,4 @@
+
 import { Component } from '@angular/core';
 import { GameService } from 'src/app/model/game.service';
 
@@ -7,11 +8,14 @@ import { GameService } from 'src/app/model/game.service';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent {
-  gameType: boolean = true; //True = two player game
-  constructor(private gameService: GameService){
-    gameService.setGameType(this.gameType)
+  gameType: boolean = true;
+
+  constructor(private gameService: GameService) {
+    this.setGameType(this.gameType);
   }
-  setGameType($event: boolean) {
-    this.gameService.setGameType($event)
+
+  setGameType(value: boolean) {
+    this.gameType = value;
+    this.gameService.setGameType(this.gameType);
   }
 }

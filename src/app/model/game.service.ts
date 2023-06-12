@@ -1,3 +1,4 @@
+
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs'
 import { ToastService } from './toast.service';
@@ -5,32 +6,13 @@ import { Subscription } from 'rxjs';
 
 @Injectable()
 export class GameService {
-     private alertSubscription: Subscription;
-
-     private _alertOn: boolean = false;
-     private _userToggle: boolean = true; //Whether it is user's turn.
-     private _gameOff: boolean = false; //Whether the game is over.
-     private currentColumn: number = 0; //Previously selected position.
-     private currentRow: number = 0; //Previously selected position.
-     private checkValue = 'X'; //Determine the value for checking.
-     private twoPlayerGameMode = false;
-
-     updateView = new BehaviorSubject<number[]>([]); //Used to hold positions passed to update view.
-     userToggle = new BehaviorSubject<boolean>(this._userToggle); //Used to determine whether it's the user's turn or the opponents.
-     gameOff = new BehaviorSubject<boolean>(this._gameOff); //Used to determine whether the game is still being played.
-
-     constructor(private toaster: ToastService) {
-          this.alertSubscription = this.toaster.getAlertOn().subscribe((change) => {
-               this._alertOn = change;
-          });
-     }
-     
+     //Unused array for the model.
      private _ticTacModel = [
           ['', '', ''],
           ['', '', ''],
           ['', '', ''],
      ]
-
+     //All available computer moves remaining.
      private _computerMovesRemaining = [
           [0, 0],
           [0, 1],
@@ -42,11 +24,33 @@ export class GameService {
           [2, 1],
           [2, 2],
      ];
+     //Variables for use within service. _variableName denotes variables for behaivor subject use.
+     private _resetView: boolean = false;
+     private _userToggle: boolean = true; //Whether it is user's turn.
+     private _gameOff: boolean = false; //Whether the game is over.
+     private currentColumn: number = 0; //Previously selected position.
+     private currentRow: number = 0; //Previously selected position.
+     private checkValue = 'X'; //Determine the value for checking.
+     private twoPlayerGameMode = false;
+
+     resetView = new BehaviorSubject<boolean>(false); //Used to reset view for tic-tac-toe board component.
+     updateView = new BehaviorSubject<number[]>([]); //Used to hold positions passed to update view.
+     userToggle = new BehaviorSubject<boolean>(this._userToggle); //Used to determine whether it's the user's turn or the opponents.
+     gameOff = new BehaviorSubject<boolean>(this._gameOff); //Used to determine whether the game is still being played.
+
+     constructor(private toaster: ToastService) {
+     }
 
      setGameType(value: boolean) {
-          this.toaster.createAlert(this._userToggle ? "User's Turn" : "Other Player's Turn");
-          value ? this.twoPlayerGameMode = true: 
-                  this.twoPlayerGameMode = false;
+          value ? this.twoPlayerGameMode = true :
+               this.twoPlayerGameMode = false;
+     }
+
+     updateResetView() {
+          this._resetView = !this._resetView;
+          this.resetView.next(this._resetView);
+          this._resetView = !this._resetView;
+          this.resetView.next(this._resetView);
      }
 
      addToModel(position: number[]) {
@@ -79,9 +83,9 @@ export class GameService {
                     this.changeToOtherPlayer(); //Change to other player.
                }
                else {
-                         if (this._userToggle == false) {
-                              this.generateComputersMove();
-                         }
+                    if (this._userToggle == false) {
+                         this.generateComputersMove();
+                    }
                }
           }
      }
@@ -188,7 +192,7 @@ export class GameService {
 
      generateComputersMove() {
           //Used to hold the position for the computer and pass to the model.
-          let chosenPosition:  number[] = [];
+          let chosenPosition: number[] = [];
 
           //Flattens 2D array to correspond with _computerMovesRemaining index.
           let flat = this._ticTacModel.flat();
@@ -214,7 +218,7 @@ export class GameService {
           }
           //If no chosen position was found, passes the one left.
           if (!chosenPosition.length) {
-                    chosenPosition = potentialMoves[0];
+               chosenPosition = potentialMoves[0];
           }
           this.addToModel(chosenPosition);
      }
@@ -234,8 +238,8 @@ export class GameService {
           return newArr;
      }
 
-      //Used to reset the array following completion of the game.
-      resetArray() {
+     //Used to reset the array following completion of the game.
+     resetArray() {
           return [
                ['', '', ''],
                ['', '', ''],
@@ -255,17 +259,21 @@ export class GameService {
                [2, 2],
           ]
      }
-     getTurn(): BehaviorSubject<boolean> {
+     //Return of BehaivorSubjects.
+     getTurn() {
           //Used to tell the Squares what to mark the squares with.
           return this.userToggle;
      }
-
-     getGameOff(): BehaviorSubject<boolean> {
+     getGameOff() {
           //Used to tell the view that the game is over.
           return this.gameOff;
      }
      getViewUpdater() {
           //Used for computer moves to update the display.
           return this.updateView;
+     }
+     getResetView() {
+          //Used to reset screen in frontend.
+          return this.resetView;
      }
 }

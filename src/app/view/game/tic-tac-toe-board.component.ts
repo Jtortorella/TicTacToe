@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs'
+import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { GameService } from 'src/app/model/game.service';
 
 @Component({
@@ -7,47 +7,51 @@ import { GameService } from 'src/app/model/game.service';
   templateUrl: './tic-tac-toe-board.component.html',
   styleUrls: ['./tic-tac-toe-board.component.css']
 })
-export class TicTacToeBoardComponent {
+export class TicTacToeBoardComponent implements OnDestroy {
   private elementsChanged: HTMLElement[] = [];
   private viewSubscription: Subscription;
   private gameSubscription: Subscription;
-  private turnSubscription : Subscription;
-  private checkValue: string = '';
-  constructor(private gameService: GameService){
-    this.viewSubscription = this.gameService.getViewUpdater().subscribe((change) => {
-        this.updateView(change);
+  private turnSubscription: Subscription;
+  private checkValue = '';
+
+  constructor(private gameService: GameService) {
+    this.viewSubscription = this.gameService.getViewUpdater().subscribe((change: number[]) => {
+      this.updateView(change);
     });
-    this.turnSubscription = this.gameService.getTurn().subscribe((change) => {
-      change == false ? this.checkValue = 'O' : this.checkValue = 'X'
-    })
-    this.gameSubscription = this.gameService.getGameOff().subscribe((change) => {
-      if (change == true) {
+    this.turnSubscription = this.gameService.getTurn().subscribe((change: boolean) => {
+      this.checkValue = change ? 'X' : 'O';
+    });
+    this.gameSubscription = this.gameService.getResetView().subscribe((change: boolean) => {
+      if (change) {
         this.resetView();
       }
-    })
-    
+    });
   }
 
   updateModel(position: number[]) {
     this.gameService.addToModel(position);
   }
-  
+
   updateView(position: number[]) {
     if (position.length > 1) {
-      let selectedPlacement = document!.getElementById(position.toString());
-      selectedPlacement!.innerText = this.checkValue;
+      const selectedPlacement = document.getElementById(position.toString());
       if (selectedPlacement) {
+        selectedPlacement.innerText = this.checkValue;
         this.elementsChanged.push(selectedPlacement);
       }
     }
-    
   }
-  
+
   resetView() {
-    setTimeout(() => {
-      for (let index = 0; index < this.elementsChanged.length; index++) {
-        this.elementsChanged[index].innerText = '';
-      }
-    }, 1000);
+    for (const element of this.elementsChanged) {
+      element.innerText = '_';
+    }
+    this.elementsChanged = [];
+  }
+
+  ngOnDestroy() {
+    this.viewSubscription.unsubscribe();
+    this.gameSubscription.unsubscribe();
+    this.turnSubscription.unsubscribe();
   }
 }

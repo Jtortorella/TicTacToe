@@ -1,8 +1,7 @@
-<dialog class="dialog" 
-     (click)="close()">
+<dialog class="dialog" (click)="close()">
      {{ alertText }}
      <div class="button-group" *ngIf="gameOff">
           <button routerLink="/game" (click)="endGame()">Play Again</button>
-          <button routerLink="/menu" (click)="endGame()">Back To Main Menu</button>
+          <button routerLink="/menu" (click)="endGame()">Main Menu</button>
      </div>
 </dialog>
